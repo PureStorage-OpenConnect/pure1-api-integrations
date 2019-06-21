@@ -1,7 +1,7 @@
 # Pure Storage-VMware Wavefront integration sample scripts
 
 ## Overview
-The goal of this integration is to showcase the integration between Pure1 and Wavefront using the [Pure Storage Unified Python Client]|() and the Wavefront Python SDK. 
+The goal of this integration is to showcase the integration between Pure1 and Wavefront using the [Pure Storage Unified Python Client](https://pypi.org/project/py-pure-client/) and the Wavefront Python SDK. 
 The sample `pure1_wf.py` Python script publishes all the array metrics for all the arrays monitored in your Pure1 account to your Wavefront account.
 ## Pre-requisites
 - You must have a Pure1 organization, the credentials of a Pure1 organization administrator account on hand, as well as a valid Wavefront account.
