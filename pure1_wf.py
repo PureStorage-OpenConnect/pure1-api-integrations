@@ -32,7 +32,7 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, time
     metrics_loops = arrays_metrics_count // max_metric_count
     if(arrays_metrics_count % max_metric_count > 0):
         metrics_loops +=1
-    #print("metrics loop: " +str(metrics_loop))
+    #print("metrics loops: ", metrics_loops)
 
     response = client.get_arrays(sort=pure1.Array.name.ascending())
     arrays = list(response.items)
@@ -60,24 +60,22 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, time
     for i in range(0, array_loops):
         ids_list = []
         names_list = []
-        for j in range(0,max_resource_count-1):
+        for j in range(0,max_resource_count):
             try:
-                ids_list.append(arrays[(max_resource_count-1)*i+j].id)
-                names_list.append(arrays[(max_resource_count-1)*i+j].name)
+                ids_list.append(arrays[max_resource_count*i+j].id)
+                names_list.append(arrays[max_resource_count*i+j].name)
             except:
                 pass
-                #print("ids_list exc")
-        #print("ID list: ",ids_list)
 
         for i in range(0, metrics_loops):
             metrics_list = []
             for j in range(0,max_metric_count):
                 try:
-                    metrics_list.append(arrays_metrics[(max_metric_count-1)*i+j].name)
+                    metrics_list.append(arrays_metrics[max_metric_count*i+j].name)
                 except:
                     pass
-            #print("metrics list: " + str(metrics_list))
-            #print("array list: " + str(ids_list))
+            #print("metrics list: ", metrics_list)
+            #print("array list: ", ids_list)
             response = client.get_metrics_history(aggregation='avg',names=metrics_list,resource_ids=ids_list, resolution=resolution_ms, start_time=start, end_time=end)
             time.sleep(0.5) #included to avoid hitting the API rate limit
             #print(response)
@@ -97,7 +95,8 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, time
                             name="purestorage.metrics." + metric_name, value=metric_data[1], timestamp=metric_data[0],
                             source="pure1-rest-api", tags={'arrayName': arrayName})
                     else:
-                        print("no " + metric_name + " metric for array: " + arrayName)
+                        pass
+                        #print("no " + metric_name + " metric for array: " + arrayName)
             else:
                 if response.status_code == 429 or response.status_code == 404:
                     print("API rate limit exceeded for ", names_list)
@@ -177,5 +176,3 @@ if __name__ == '__main__':
         if sleep_for > 0:
             print("waiting", sleep_for, "seconds for next query")
             time.sleep(sleep_for)
-
-
