@@ -89,11 +89,12 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, time
                     #print(metric_name)
                     #print(array_data)
                     if metric_item.data:
-                        metric_data = metric_item.data[0]
-                        #print(metric_data)
-                        wavefront_sender.send_metric(
-                            name="purestorage.metrics." + metric_name, value=metric_data[1], timestamp=metric_data[0],
-                            source="pure1-rest-api", tags={'arrayName': arrayName})
+                        for metric_data in metric_item.data:
+                        #metric_data = metric_item.data[0]
+                            #print(metric_data)
+                            wavefront_sender.send_metric(
+                                name="purestorage.metrics." + metric_name, value=metric_data[1], timestamp=metric_data[0],
+                                source="pure1-rest-api", tags={'arrayName': arrayName})
                     else:
                         pass
                         #print("no " + metric_name + " metric for array: " + arrayName)

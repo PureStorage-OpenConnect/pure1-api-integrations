@@ -20,4 +20,4 @@ To run the script, simply call the following command line:
 
 Note: the `-p` (`--password`) argument is optional and only required if you encrypted your private key file with a password.
 
-If everything was properly configured, you should see Pure1
+If everything was properly configured, you should see Pure1 metrics available in Wavefront Metrics page in the `purestorage.metrics` bucket.
