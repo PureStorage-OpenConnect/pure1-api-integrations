@@ -36,7 +36,7 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
     array_count = len(arrays)
     array_loops = -(-array_count // MAX_RESOURCES_COUNT) #upside-down floor division
 
-    #_start = time.time() #uncomment for query count logging
+    _start = time.time() #used for query count logging
     #metric_count = 0
     for i in range(0, array_loops):
         ids_list = []
@@ -57,8 +57,8 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
                     pass
 
             response = pureClient.get_metrics_history(aggregation='avg',names=_metrics_list,resource_ids=ids_list, resolution=resolution_ms, start_time=start, end_time=end)
-            #global queries_count
-            #queries_count +=1
+            global queries_count
+            queries_count +=1
             time.sleep(0.5) #added to avoid hitting the API rate limit
 
             if hasattr(response, 'items'):
@@ -85,9 +85,9 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
                 else:     
                     print(str.format("error with metrics: {}: {}", str(metrics_list), response))
 
-        #_end = time.time()
-        #_elapsed_time = _end - _start
-        #print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_elapsed_time)))
+    _end = time.time()
+    _elapsed_time = _end - _start
+    print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_elapsed_time)))
 
 def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, resource_type, interval_seconds, start_time, resolution_ms):
     
