@@ -113,7 +113,7 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
         batch_size=40000,
         flush_interval_seconds=5)
 
-    #pull data from Pure1 for the last 7 days (or based on specified start time) in increments of 30 minutes
+    #Retrieves data from Pure1 for the last 7 days (or based on specified start time) in increments of 30 minutes
     days_count = 7
     if interval_seconds == -1:
         interval_seconds = 1800
@@ -132,13 +132,11 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
             end = start + interval_seconds
             print("Start Time:", start, "End Time:", end)
             get_send_data(pure1Client, wavefront_sender, metrics_list, resources, server, token, resolution_ms, start, end)
-            print(str.format("Performed {} queries", str(queries_count)))  
     else:
         end = int((datetime.datetime.now() - datetime.timedelta(hours = 2)).timestamp())
         start = int(end - datetime.timedelta(seconds=interval_seconds).total_seconds())
         print("Start Time:", start, "End Time:", end)
         get_send_data(pure1Client, wavefront_sender, metrics_list, resources, server, token, resolution_ms, start, end)
-        print(str.format("Performed {} queries", str(queries_count))) 
 
     wavefront_sender.close()
 
