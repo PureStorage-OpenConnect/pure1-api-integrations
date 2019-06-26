@@ -32,14 +32,12 @@ def get_metrics_list(pure1_api_id, pure1_pk_file,pure1_pk_pwd, resource_type, re
 def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, token, resolution_ms, start, end):
 
     arrays_metrics_count = len(metrics_list)
-    metrics_loops = -(-arrays_metrics_count // MAX_METRICS_COUNT) # upside-down floor division
+    metrics_loops = -(-arrays_metrics_count // MAX_METRICS_COUNT) #upside-down floor division
     array_count = len(arrays)
-    array_loops = -(-array_count // MAX_RESOURCES_COUNT)
-    print("array_loops: ", array_loops)
-    #time.sleep(5)
+    array_loops = -(-array_count // MAX_RESOURCES_COUNT) #upside-down floor division
 
-    _start = time.time() #uncomment for query count logging
-    metric_count = 0
+    #_start = time.time() #uncomment for query count logging
+    #metric_count = 0
     for i in range(0, array_loops):
         ids_list = []
         names_list = []
@@ -57,43 +55,39 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
                     _metrics_list.append(metrics_list[MAX_METRICS_COUNT*i+j].name)
                 except:
                     pass
-            #print("metrics list: ", _metrics_list)
-            #print("array list: ", ids_list)
+
             response = pureClient.get_metrics_history(aggregation='avg',names=_metrics_list,resource_ids=ids_list, resolution=resolution_ms, start_time=start, end_time=end)
-            global queries_count
-            queries_count +=1
-            time.sleep(0.5) #included to avoid hitting the API rate limit
+            #global queries_count
+            #queries_count +=1
+            time.sleep(0.5) #added to avoid hitting the API rate limit
 
             if hasattr(response, 'items'):
                 metric_items = list(response.items)
                 for metric_item in metric_items:
                     metric_name = metric_item.name
                     arrayName = metric_item.resources[0].name
-                    #print(metric_item)
-                    #print(arrayName)            
-                    #print(metric_name)
+ 
                     if metric_item.data:
                         for metric_data in metric_item.data:
-                            metric_count+=1
+                            #metric_count+=1
                             #print(metric_count, metric_data)
-                            #print(metric_data)
                             wavefront_sender.send_metric(name=WAVEFRONT_METRICS_NAMESPACE + metric_name, value=metric_data[1], timestamp=metric_data[0], source=WAVEFRONT_SOURCE, tags={'arrayName': arrayName})
                     else:
                         pass
-                        #print("no " + metric_name + " metric for array: " + arrayName)
             else:
                 if response.status_code == 429 or response.status_code == 404:
-                    print("API rate limit exceeded for ", names_list)
                     print(response.errors[0].message)
                     if response.errors[0].context is not None:
                         print(response.errors[0].context)
-                    print("Remaining requests: " + response.headers.x_ratelimit_limit_minute)
-                    _end = time.time()
-                    _elapsed_time = _end - _start
-                    print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_elapsed_time))) 
+                    if response.status_code == 429:
+                        print("API rate limit exceeded for ", names_list)
+                        print("Remaining requests: " + response.headers.x_ratelimit_limit_minute) 
                 else:     
                     print(str.format("error with metrics: {}: {}", str(metrics_list), response))
-        wavefront_sender.close()
+
+        #_end = time.time()
+        #_elapsed_time = _end - _start
+        #print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_elapsed_time)))
 
 def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, resource_type, interval_seconds, start_time, resolution_ms):
     
@@ -119,7 +113,7 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
         batch_size=40000,
         flush_interval_seconds=5)
 
-    #pull data from Pure1 for the last 7 days (or based on specified start time) in increments of 10 minutes
+    #pull data from Pure1 for the last 7 days (or based on specified start time) in increments of 30 minutes
     days_count = 7
     if interval_seconds == -1:
         interval_seconds = 1800
@@ -130,9 +124,9 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
         else:
             timespan_seconds = 3600 * (24 * days_count - 2) #querying for `days_count` days of data up to 2 hours from now           
             initial_start = int((datetime.datetime.now() - datetime.timedelta(days = days_count)).timestamp())
-        #initial_start = 1560818574
+        
         loops = - (-timespan_seconds // interval_seconds) # number of 360 seconds intervals in days_count days (-2 hours)
-        print("loops", loops)
+
         for i in range(0, loops-1):
             start = initial_start + i*interval_seconds
             end = start + interval_seconds
@@ -145,8 +139,8 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
         print("Start Time:", start, "End Time:", end)
         get_send_data(pure1Client, wavefront_sender, metrics_list, resources, server, token, resolution_ms, start, end)
         print(str.format("Performed {} queries", str(queries_count))) 
-    #get_send_data(pure1Client, wavefront_sender, metrics_list, arrays, server, token, resolution_ms, start, end)
-    
+
+    wavefront_sender.close()
 
 if __name__ == '__main__':
 
