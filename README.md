@@ -32,7 +32,7 @@ where the parameters should be:
 Additionally, the script accepts several optional parameters:
 
 - `-p` (or `--password`) is only required if the private key file was encrypted with a password.
-- `-r` (or `--resolution`) controls the resolution (in ms) of the metrics, i.e. the granularity of the data points available in Wavefront. Defaults to 30,000 ms.
+- `-r` (or `--resolution`) controls the resolution (in ms) of the metrics you are interesting in collecting. Specifically, the script will retrieve __all__ the metrics for which the resolution is __lower than__ the specified resolution. Defaults to 1 day (8,6400,000 milliseconds, i.e. all of the available metrics).
 - `-i` (or `--interval`) controls the interval (in seconds) between each batched query. Defaults to 180s (3 minutes). For instance, with interval set to 180s, the script will retrieve metrics data for the last 3 minutes (2 hours prior) every 3 minutes (and pauses until 3 minutes have elapsed). If set to `-1`, the script will defer to the `--start` parameter to determine the start date and time (in the past) to start collecting data (in 30 minutes intervals, without pause)
 - `-s` (or `--start`) controls the start date and time at which the script should start collecting data (up to 2 hours from now)
 
