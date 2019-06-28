@@ -123,7 +123,7 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
     #hardcoding metrics array list for testing purposes
     #testMetric = pure1.Metric(name = 'array_read_iops')
     #metrics_list = [testMetric]
-    
+
     response = None
     if resource_type == "arrays":
         response = pure1Client.get_arrays()
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     _.add_argument('token', type=str, help='Wavefront API token.')
     _.add_argument('pure1_api_id', type=str, help='Pure1 API Client App ID.')
     _.add_argument('pure1_pk_file', type=str, help='Pure1 API Client Private Key File')
-    _.add_argument('-r', '--resolution', type=int, help='Resolution in ms of the metrics to be published to Wavefront - available values should be between 30,000 (30 seconds) and 86,400,000 (1 day). Defaults to 1 day', default=86400000)
+    _.add_argument('-r', '--resolution', type=int, help='Resolution (in milliseconds) of the metrics to be retrieved from Pure1 - available values should be between 30,000 (30 seconds) and 86,400,000 (1 day). Defaults to 1 day', default=86400000)
     _.add_argument('-i', '--interval', type=int, help='Interval at which the script should run (also impacts Pure1 queries). Defaults to 3 minutes, specify -1 to run once only', default=180)
     _.add_argument('-s', '--start', type=int, help='Start date of the queries. Only works if --interval is set to -1', default=0)
     _.add_argument('-rt', '--resource_type', type=str, help='Name of the resource type to be queried. Currently only supports and defaults to "arrays"', default="arrays")
