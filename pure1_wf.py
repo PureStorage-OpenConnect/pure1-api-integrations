@@ -46,13 +46,12 @@ def sort(metrics_list):
 def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, token, resolution_ms, start, end):
 
     metrics_count = len(metrics_list)
-    #print("metric count:", metrics_count)
-    #metrics_loops = -(-metrics_count // MAX_METRICS_COUNT_PER_QUERY) #upside-down floor division
+
     array_count = len(arrays)
     array_loops = -(-array_count // MAX_RESOURCES_COUNT_PER_QUERY) #upside-down floor division
 
     _start = time.time() #used for query count logging
-    #metric_count = 0
+
     for i in range(0, array_loops):
         ids_list = []
         names_list = []
@@ -75,7 +74,7 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
                         #getting the first metric resolution and trying to group other metrics with the same resolution
                         _metric_resolution_base = _metric_resolution
                         _temp_count = 0
-                    #print(metrics_list[j].name, metrics_list[j].availabilities[0].resolution)
+
                     if _metric_resolution == _metric_resolution_base:
                         _metrics_list.append(metrics_list[j])
                         _metrics_names.append(metrics_list[j].name)
@@ -110,11 +109,10 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
                         print("API rate limit exceeded for ", names_list)
                         print("Remaining requests: " + response.headers.x_ratelimit_limit_minute) 
                 else:     
-                    print(str.format("error with metrics: {}: {}", str(metrics_list), response))
+                    print(str.format("error: {}", response.errors[0].message))
 
     _end = time.time()
-    _elapsed_time = _end - _start
-    print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_elapsed_time)))
+    print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_end - _start)))
 
 def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, resource_type, interval_seconds, start_time, resolution_ms):
     
@@ -125,6 +123,7 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
     #hardcoding metrics array list for testing purposes
     #testMetric = pure1.Metric(name = 'array_read_iops')
     #metrics_list = [testMetric]
+    
     response = None
     if resource_type == "arrays":
         response = pure1Client.get_arrays()
