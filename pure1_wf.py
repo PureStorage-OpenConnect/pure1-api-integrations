@@ -15,8 +15,8 @@ from pypureclient import pure1
 WAVEFRONT_SOURCE="pure1-rest-api"
 WAVEFRONT_METRICS_NAMESPACE="purestorage.metrics."
 #IMPORTANT NOTE: make sure max_resource_count * max_metric_count <=16
-MAX_RESOURCES_COUNT_PER_QUERY = 8 #defines the max number of resources (such as arrays) that should be queried for in one single metrics query
-MAX_METRICS_COUNT_PER_QUERY = 2 #defines the max number of metrics that should be queried for in one single metrics query
+MAX_RESOURCES_COUNT_PER_QUERY = 16 #defines the max number of resources (such as arrays) that should be queried for in one single metrics query
+MAX_METRICS_COUNT_PER_QUERY = 1 #defines the max number of metrics that should be queried for in one single metrics query
 queries_count = 1
 sorted_metrics = None
 
@@ -25,7 +25,7 @@ def get_metrics_list(pure1_api_id, pure1_pk_file,pure1_pk_pwd, resource_type, re
     global sorted_metrics
     if sorted_metrics is None:
         client = pure1.Client(private_key_file=pure1_pk_file, private_key_password=pure1_pk_pwd, app_id=pure1_api_id)
-        response = client.get_metrics(filter=str.format("resource_types[all]='{}' and availabilities.resolution<={}", resource_type, str(resolution_ms)))
+        response = client.get_metrics(filter=str.format("resource_types[all]='{}' and availabilities.resolution<={} and not(contains(name, 'mirrored'))", resource_type, str(resolution_ms)))
         metrics_list = list(response.items)
         sorted_metrics = sort(metrics_list)
     return sorted_metrics
@@ -109,7 +109,8 @@ def get_send_data(pureClient, wavefront_sender, metrics_list, arrays, server, to
                         print("API rate limit exceeded for ", names_list)
                         print("Remaining requests: " + response.headers.x_ratelimit_limit_minute) 
                 else:     
-                    print(str.format("error: {}", response.errors[0].message))
+                    print(str.format("error code: {}\n error: {}", response.status_code, response.errors[0].message))
+                    print(str.format("arrays: {} - metrics: {}", str(names_list), str(_metrics_names)))
 
     _end = time.time()
     print(str.format("Performed {} queries in {} seconds", str(queries_count), int(_end - _start)))
