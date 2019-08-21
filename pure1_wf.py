@@ -15,17 +15,16 @@ from pypureclient import pure1
 WAVEFRONT_SOURCE="pure1-rest-api"
 WAVEFRONT_METRICS_NAMESPACE="purestorage.metrics."
 #IMPORTANT NOTE: make sure max_resource_count * max_metric_count <=16
-MAX_RESOURCES_COUNT_PER_QUERY = 16 #defines the max number of resources (such as arrays) that should be queried for in one single metrics query
-MAX_METRICS_COUNT_PER_QUERY = 1 #defines the max number of metrics that should be queried for in one single metrics query
+MAX_RESOURCES_COUNT_PER_QUERY = 8 #defines the max number of resources (such as arrays) that should be queried for in one single metrics query
+MAX_METRICS_COUNT_PER_QUERY = 2 #defines the max number of metrics that should be queried for in one single metrics query
 queries_count = 1
 sorted_metrics = None
 
 #Retrieves all the metrics with a resolution 
-def get_metrics_list(pure1_api_id, pure1_pk_file,pure1_pk_pwd, resource_type, resolution_ms):
+def get_metrics_list(pure1Client, resource_type, resolution_ms):
     global sorted_metrics
     if sorted_metrics is None:
-        client = pure1.Client(private_key_file=pure1_pk_file, private_key_password=pure1_pk_pwd, app_id=pure1_api_id)
-        response = client.get_metrics(filter=str.format("resource_types[all]='{}' and availabilities.resolution<={} and not(contains(name, 'mirrored'))", resource_type, str(resolution_ms)))
+        response = pure1Client.get_metrics(filter=str.format("resource_types[all]='{}' and availabilities.resolution<={} and not(contains(name, 'mirrored'))", resource_type, str(resolution_ms)))
         metrics_list = list(response.items)
         sorted_metrics = sort(metrics_list)
     return sorted_metrics
@@ -119,7 +118,7 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
     
     pure1Client = pure1.Client(private_key_file=pure1_pk_file, private_key_password=pure1_pk_pwd, app_id=pure1_api_id)
 
-    metrics_list = get_metrics_list(pure1_api_id, pure1_pk_file, pure1_pk_pwd, resource_type, resolution_ms)
+    metrics_list = get_metrics_list(pure1Client, resource_type, resolution_ms)
 
     #hardcoding metrics array list for testing purposes
     #testMetric = pure1.Metric(name = 'array_read_iops')
