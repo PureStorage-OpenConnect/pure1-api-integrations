@@ -24,7 +24,8 @@ sorted_metrics = None
 def get_metrics_list(pure1Client, resource_type, resolution_ms):
     global sorted_metrics
     if sorted_metrics is None:
-        response = pure1Client.get_metrics(filter=str.format("resource_types[all]='{}' and availabilities.resolution<={} and not(contains(name, 'mirrored'))", resource_type, str(resolution_ms)))
+        response = pure1Client.get_metrics(filter=str.format("resource_types[all]='{}' and availabilities.resolution<={})", resource_type, str(resolution_ms)))
+        #and not(contains(name, 'mirrored')
         metrics_list = list(response.items)
         sorted_metrics = sort(metrics_list)
     return sorted_metrics
@@ -135,8 +136,8 @@ def report_metrics(server, token, pure1_api_id, pure1_pk_file,pure1_pk_pwd, reso
     wavefront_sender = WavefrontDirectClient(
         server=server,
         token=token,
-        max_queue_size=100000,
-        batch_size=40000,
+        max_queue_size=10000,
+        batch_size=4000,
         flush_interval_seconds=5)
 
     #Retrieves data from Pure1 for the last 7 days (or based on specified start time) in increments of 30 minutes
