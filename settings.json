@@ -2,7 +2,7 @@
     "id": "pure1-api-integrations",
     "name": "Pure1 API Integrations",
     "filter": "devops",
-    "image": "http://code.purestorage.com/images/30_pure1.png",
+    "image": "https://code.purestorage.com/images/30_pure1.png",
     "featured": 1,
     "priority": 3
 }
