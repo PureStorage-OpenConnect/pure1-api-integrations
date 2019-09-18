@@ -175,7 +175,7 @@ if __name__ == '__main__':
     _.add_argument('pure1_api_id', type=str, help='Pure1 API Client App ID.')
     _.add_argument('pure1_pk_file', type=str, help='Pure1 API Client Private Key File')
     _.add_argument('-r', '--resolution', type=int, help='Resolution (in milliseconds) of the metrics to be retrieved from Pure1 - available values should be between 30,000 (30 seconds) and 86,400,000 (1 day). Defaults to 1 day', default=86400000)
-    _.add_argument('-i', '--interval', type=int, help='Interval at which the script should run (also impacts Pure1 queries). Defaults to 3 minutes, specify -1 to run once only', default=180)
+    _.add_argument('-i', '--interval', type=int, help='Interval at which the script should run, measured in seconds (also impacts Pure1 queries). Defaults to 3 minutes, specify -1 to run once only', default=180)
     _.add_argument('-s', '--start', type=int, help='Start date of the queries. Only works if --interval is set to -1', default=0)
     _.add_argument('-rt', '--resource_type', type=str, help='Name of the resource type to be queried. Currently only supports and defaults to "arrays"', default="arrays")
     _.add_argument('-p', '--password', type=str, help="use if private key is encrypted (or use keyboard prompt)")
