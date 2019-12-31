@@ -31,10 +31,10 @@ def generate_fleet_report(pure1_api_id, pure1_pk_file, pure1_pk_pwd):
     with open('pure1_report.csv', 'w') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['Array Name', 'Model', 'OS Version', 'Total Capacity (TB)', 'Effective Used Space (GB)', 'Data Reduction', 'Shared Space (GB)'])
+        filewriter.writerow(['Array Name', 'Model', 'OS Version', 'Total Capacity (TB)', 'Volume Space (TB)', 'File System Space (TB)', 'Snapshot Space (TB)', 'Shared Space (GB)', 'Data Reduction'])
         for array in arrays:
             os_version = str.format("{} {}",array.os, array.version)
-            metrics_names = ['array_total_capacity', 'array_effective_used_space', 'array_data_reduction', 'array_shared_space']
+            metrics_names = ['array_total_capacity', 'array_volume_space', 'array_snapshot_space', 'array_file_system_space', 'array_effective_used_space', 'array_shared_space', 'array_data_reduction']
             start = int((datetime.datetime.now() - datetime.timedelta(days = REPORTING_INTERVAL_DAYS)).timestamp())
             end = int((datetime.datetime.now()).timestamp())
             response = pure1Client.get_metrics_history(aggregation='avg',names=metrics_names,resource_ids=array.id, resolution=METRIC_RESOLUTION_DAY*REPORTING_INTERVAL_DAYS, start_time=start, end_time=end)
@@ -46,17 +46,23 @@ def generate_fleet_report(pure1_api_id, pure1_pk_file, pure1_pk_pwd):
                         for metric_data in metric_item.data:
                             metric_name = metric_item.name
                             if metric_name == 'array_total_capacity':
-                                total_capacity = metric_data[1]/BYTES_IN_A_TERABYTE
+                                total_capacity = round(metric_data[1]/BYTES_IN_A_TERABYTE,2)
                             elif metric_name == 'array_effective_used_space':
-                                effective_used_space = metric_data[1]/BYTES_IN_A_GIGABYTE
+                                effective_used_space = round(metric_data[1]/BYTES_IN_A_GIGABYTE, 2)
+                            elif metric_name == 'array_volume_space':
+                                volume_space = round(metric_data[1]/BYTES_IN_A_TERABYTE, 2)
+                            elif metric_name == 'array_snapshot_space':
+                                snapshot_space = round(metric_data[1]/BYTES_IN_A_TERABYTE, 2)
+                            elif metric_name == 'array_file_system_space':
+                                file_system_space = round(metric_data[1]/BYTES_IN_A_TERABYTE, 2)
                             elif metric_name == 'array_data_reduction':
-                                data_reduction = metric_data[1]
+                                data_reduction = round(metric_data[1], 2)
                             elif metric_name == 'array_shared_space':
-                                shared_space = metric_data[1]/BYTES_IN_A_GIGABYTE
+                                shared_space = round(metric_data[1]/BYTES_IN_A_GIGABYTE, 2)
                     else:
                         effective_used_space = 0 #if we end up here, it's most likely because the array_effective_used_space is absent
 
-                filewriter.writerow([array.name, array.model, os_version, total_capacity, effective_used_space, data_reduction, shared_space])
+                filewriter.writerow([array.name, array.model, os_version, total_capacity, volume_space, file_system_space, snapshot_space, shared_space, data_reduction])
 
 if __name__ == '__main__':
 
@@ -66,6 +72,6 @@ if __name__ == '__main__':
     _.add_argument('-p', '--password', type=str, help="use if private key is encrypted (or use keyboard prompt)")
     ARGS = _.parse_args()
 
-    print("Generating Pure1 custom report")
+    print("Generating Pure1 custom capacity report")
     generate_fleet_report(ARGS.pure1_api_id, ARGS.pure1_pk_file, ARGS.password)
   
