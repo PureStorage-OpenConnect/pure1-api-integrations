@@ -1,2 +1,2 @@
 wavefront-sdk-python==1.1.1
-py-pure-client==1.0.1
+py-pure-client==1.6.0

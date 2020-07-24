@@ -15,7 +15,7 @@ BYTES_IN_A_GIGABYTE=1000000000
 BYTES_IN_A_TEBIBYTE=1099511627776
 BYTES_IN_A_GIBIBYTE=1073741824
 AGGREGATION_TYPE = 'avg' #can be set to either 'avg' or 'max'
-REPORTING_INTERVAL_DAYS=1
+REPORTING_INTERVAL_DAYS=30
 
 
 def generate_fleet_report(pure1_api_id, pure1_pk_file, pure1_pk_pwd):
