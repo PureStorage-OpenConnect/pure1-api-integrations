@@ -1,5 +1,8 @@
 send-wf.sh
 gen-report.sh
+gen-inventory-report.sh
 pure1_report.csv
+pure1_capacity_report*
+pure1_fb_inventory_*
 .vscode/settings.json
 https:api.pure1.purestorage.comoauth21.0token.access_token

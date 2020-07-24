@@ -23,10 +23,15 @@ The current script gathers general array fleet information (such as array name, 
 1. Sign in to https://pure1.purestorage.com as an administrator and generate an API key (using the instructions available at https://blog.purestorage.com/pure1-rest-api-part-2, for instance)
 2. Take note of your API Application Id, you will need it later on to call the `pure1_wf.py` script
 
-### Script Execution
+### Capacity Reports
+
+2 scripts are provided to generate capacity reports:
+- The `pure1_report.py` script generates a report of FlashArray appliances including a % comparison with the previous reporting interval (configurable in the `REPORTING_INTERVAL_DAYS` variable)
+- - The `pure1_fb_inventory.py` script generates a report of FlashBlades appliances including the number of used vs. total blades in each appliance and a % comparison with the previous reporting interval (configurable in the `REPORTING_INTERVAL_DAYS` variable)
+
 To run the script, simply call the following command line:
 
-`python3 pure1_report.py <pure1_app_id> <pure1_rsa_private_key_file> -p <pure1_private_keyfile_password>`
+`python3 pure1_report.py|pure1_fb_inventory.py <pure1_app_id> <pure1_rsa_private_key_file> -p <pure1_private_keyfile_password>`
 
 where the parameters should be:
 - `<pure1_app_id>`: the Pure1 Application Id you registered in step #2 of the Installation section above
